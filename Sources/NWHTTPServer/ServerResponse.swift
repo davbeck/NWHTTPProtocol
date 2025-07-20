@@ -191,6 +191,8 @@ open class ServerResponse {
    */
   open func end() {
     assert(!writableEnded)
+	
+	if !didWriteHead { writeHead() }
 
     writableEnded = true
     let callbacks = _endHandlers; _endHandlers = []
@@ -199,7 +201,6 @@ open class ServerResponse {
       return callbacks.forEach { $0(self) }
     }
 
-    if !didWriteHead { writeHead() }
     flushIfPossible()
 
     let message = NWProtocolFramer.Message.httpMessage
